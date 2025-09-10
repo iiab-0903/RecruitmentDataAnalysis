@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('推荐职位')" />
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <label>岗位名称：</label>
+                            <input type="text" name="name"/>
+                        </li>
+                        <li>
+                            <label>城市：</label>
+                            <input type="text" name="city"/>
+                        </li>
+                        <li>
+                            <label>经验：</label>
+                            <input type="text" name="experience"/>
+                        </li>
+                        <li>
+                            <label>学历：</label>
+                            <input type="text" name="eduction"/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">
+    var prefix = ctx + "project/jobAnalyse";
+
+    $(function() {
+        var options = {
+            url: prefix + "/jobRecommendTable",
+            modalName: "推荐职位",
+            columns: [
+                {
+                    field: 'user_id',
+                    title: '用户id',
+                },
+                {
+                    field: 'job_name',
+                    title: '岗位名称',
+                },
+                {
+                    field: 'recommend_index',
+                    title: '推荐指数'
+                },
+                {
+                    field: 'company_name',
+                    title: '公司'
+                },
+                {
+                    field: 'job_city',
+                    title: '城市'
+                },
+                {
+                    field: 'experience',
+                    title: '经验'
+                },
+                {
+                    field: 'education',
+                    title: '学历'
+                },
+                {
+                    field: 'salary',
+                    title: '薪资'
+                },
+                {
+                    field: 'avg_salary',
+                    title: '平均薪资'
+                },
+                {
+                    field: 'industry',
+                    title: '行业'
+                },
+                {
+                    field: 'scale',
+                    title: '公司规模'
+                },
+            ]
+        };
+        $.table.init(options);
+    });
+</script>
+</body>
+</html>

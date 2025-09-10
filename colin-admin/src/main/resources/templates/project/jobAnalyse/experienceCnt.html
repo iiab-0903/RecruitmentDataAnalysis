@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('不同经验的招聘情况')"/>
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>不同经验的招聘情况</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="echarts" id="analyseOne"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: echarts-js"/>
+<script type="text/javascript">
+    var prefix = ctx + "project/jobAnalyse";
+    $(function () {
+        getData()
+    });
+
+    function getData() {
+        $.get(prefix + "/analyseSeven", function (result) {
+            var lineChart = echarts.init(document.getElementById("analyseOne"));
+            if (result.code == web_status.SUCCESS) {
+                var lineoption = {
+                    color: ['#80FFA5', '#00DDFF', '#37A2FF', '#FF0087', '#FFBF00'],
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'cross',
+                            label: {
+                                backgroundColor: '#6a7985'
+                            }
+                        }
+                    },
+                    legend: {
+                        data: ['招聘数量']
+                    },
+                    toolbox: {
+                        feature: {
+                            saveAsImage: {}
+                        }
+                    },
+                    label: {
+                        show: true,
+                        position: 'top'
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    xAxis: [
+                        {
+                            type: 'category',
+                            boundaryGap: false,
+                            data: []
+                        }
+                    ],
+                    yAxis: [
+                        {
+                            type: 'value'
+                        }
+                    ],
+                    series: [
+                        {
+                            name: '招聘数量',
+                            type: 'line',
+                            stack: 'Total',
+                            smooth: true,
+                            lineStyle: {
+                                width: 0
+                            },
+                            showSymbol: false,
+                            areaStyle: {
+                                opacity: 0.8,
+                                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                    {
+                                        offset: 0,
+                                        color: 'rgb(128, 255, 165)'
+                                    },
+                                    {
+                                        offset: 1,
+                                        color: 'rgb(1, 191, 236)'
+                                    }
+                                ])
+                            },
+                            emphasis: {
+                                focus: 'series'
+                            },
+                            data: []
+                        },
+                    ]
+                };
+                for (let i = 0; i < result.data.length; i++) {
+                    lineoption.xAxis[0].data.push(result.data[i].experience)
+                    lineoption.series[0].data.push(result.data[i].job_num)
+                }
+                lineChart.setOption(lineoption);
+                $(window).resize(lineChart.resize);
+            } else {
+                console.log(result)
+            }
+
+        });
+
+    }
+
+</script>
+</body>
+</html>

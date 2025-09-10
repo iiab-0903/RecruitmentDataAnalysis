@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.colin.system.mapper.project.JobAnalyseMapper">
+
+    <select id="analyseOne" resultType="com.alibaba.fastjson.JSONObject">
+        select * from ads_job_industry_salary order by salary desc limit 20
+    </select>
+
+    <select id="analyseTwo" resultType="com.alibaba.fastjson.JSONObject">
+        select * from ads_job_eduction_salary order by salary desc
+
+    </select>
+
+    <select id="analyseThree" resultType="com.alibaba.fastjson.JSONObject">
+        select * from ads_job_city_salary order by salary desc
+    </select>
+
+    <select id="analyseFour" resultType="com.alibaba.fastjson.JSONObject">
+        select * from ads_job_scale_cnt order by job_num desc
+
+    </select>
+
+    <select id="analyseFive" resultType="com.alibaba.fastjson.JSONObject">
+        select * from ads_job_type_cnt order by job_num desc
+
+    </select>
+
+    <select id="analyseSix" resultType="com.alibaba.fastjson.JSONObject">
+        select * from ads_job_eduction_cnt order by job_num desc
+    </select>
+
+    <select id="analyseSeven" resultType="com.alibaba.fastjson.JSONObject">
+        select * from ads_job_experience_cnt order by job_num desc
+    </select>
+
+
+    <select id="jobRecommend" resultType="com.alibaba.fastjson.JSONObject">
+        select t1.user_id,
+        t1.recommend_index,
+        t2.job_id,
+        t2.job_name,
+        t2.company_name,
+        t2.job_city,
+        t2.experience,
+        t2.salary,
+        t2.avg_salary,
+        t2.eduaction as education,
+        t2.industry,
+        t2.company_scale as scale
+        from job_recommend_result_detail t1
+        left join dwd_job_info t2
+        on t1.job_id = t2.job_id
+        <where>
+            <if test="name != null and name != ''">
+                and job_name like concat('%', #{name}, '%')
+            </if>
+            <if test="city != null and city != ''">
+                and job_city = #{city}
+            </if>
+            <if test="experience != null  and experience != ''">
+                and t2.experience like concat('%', #{experience}, '%')
+            </if>
+            <if test="eduction != null and eduction != ''">
+                and t2.eduaction = #{eduction}
+            </if>
+        </where>
+    </select>
+
+    <select id="getRecommendResult" resultType="com.alibaba.fastjson.JSONObject">
+        select user_id,
+               recommended_jobs
+        from job_recommend_result
+    </select>
+
+    <insert id="insertRecommendResult">
+        insert into job_recommend_result_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="jobId != null">job_id,</if>
+            <if test="recommendIndex != null">recommend_index,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="jobId != null">#{jobId},</if>
+            <if test="recommendIndex != null">#{recommendIndex},</if>
+        </trim>
+    </insert>
+
+    <select id="getRecommendResult1" resultType="com.alibaba.fastjson.JSONObject">
+        select user_id,
+               recommended_tv
+        from project.tele_show_recommend
+    </select>
+
+    <insert id="insertRecommendResult1">
+        insert into project.tele_show_recommend_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="showId != null">show_id,</if>
+            <if test="recommendIndex != null">recommend_index,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="showId != null">#{showId},</if>
+            <if test="recommendIndex != null">#{recommendIndex},</if>
+        </trim>
+    </insert>
+</mapper>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('不同学历招聘情况')"/>
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>不同学历招聘情况</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="echarts" id="analyseOne"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: echarts-js"/>
+<script type="text/javascript">
+    var prefix = ctx + "project/jobAnalyse";
+    $(function () {
+        getData()
+    });
+
+    function getData() {
+        $.get(prefix + '/analyseSix', function (result) {
+            // 基于准备好的dom，初始化echarts实例
+            var myChart = echarts.init(document.getElementById('analyseOne'));
+
+
+            option = {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: "{a} <br/>{b}: {c}",
+                },
+                legend: {
+                    orient: 'vertical',
+                    top: '25%',
+                    right: 0,
+                    data: [],
+                    textStyle: {
+                        fontSize: '12',
+                    }
+                },
+                series: [
+                    {
+                        name: '招聘数量',
+                        type: 'pie',
+                        radius: [50, 80],
+                        center: ['50%', '50%'],
+                        roseType: 'area',
+                        // radius: ['40%', '50%'],
+                        color: ['#62c98d', '#2f89cf', '#4cb9cf', '#e0c828', '#e58c00', '#eb295b'],
+                        label: {show: false},
+                        labelLine: {show: false},
+                        data: []
+                    }
+                ]
+            };
+            for (let i = 0; i < result.data.length; i++) {
+                var mapData = {
+                    name: '',
+                    value: 0
+                }
+                option.legend.data.push(result.data[i].education)
+                mapData.name = result.data[i].education
+                mapData.value = result.data[i].job_num
+                option.series[0].data.push(mapData)
+            }
+
+
+            // 使用刚指定的配置项和数据显示图表。
+            myChart.setOption(option);
+            window.addEventListener("resize", function () {
+                myChart.resize();
+            });
+        });
+
+    }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('学历薪资对比')"/>
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>学历薪资对比</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="echarts" id="analyseOne"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: echarts-js"/>
+<script type="text/javascript">
+    var prefix = ctx + "project/jobAnalyse";
+    $(function () {
+        getData()
+    });
+
+    function getData() {
+        $.get(prefix + "/analyseTwo", function (result) {
+            var myChart = echarts.init(document.getElementById('analyseOne'));
+            data = result
+            option = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                },
+                legend: {
+                    data: ['平均薪资'],
+                    top: '5%',
+                    icon: 'circle',
+                    itemGap: 35
+                },
+                grid: {
+                    left: '0%',
+                    top: '40px',
+                    right: '0%',
+                    bottom: '0',
+                    containLabel: true
+                },
+                xAxis: [{
+                    type: 'category',
+                    data: [],
+                    axisLine: {
+                        show: true,
+                        lineStyle: {
+                            width: 1,
+                            type: "solid"
+                        },
+                    },
+                    axisTick: {
+                        show: false,
+                    },
+                    axisLabel: {
+                        interval: 0,
+                        rotate: 45,
+                        show: true,
+                        splitNumber: 5,
+                        formatter: function (value) {
+                            if (value.length > 6) {
+                                return value.substring(0, 6) + '...';  // 长文本超出部分隐藏
+                            } else {
+                                return value;
+                            }
+                        }
+                    },
+                }],
+                yAxis: [{
+                    type: 'value',
+                    axisLabel: {
+                        //formatter: '{value} %'
+                        show: true,
+                    },
+                    axisTick: {
+                        show: false,
+                    },
+                    axisLine: {
+                        show: true,
+                        lineStyle: {
+                            width: 1,
+                            type: "solid"
+                        },
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            color: "rgba(255,255,255,.1)",
+                        }
+                    }
+                }],
+                series: [{
+                    name: '平均薪资',
+                    type: 'scatter',
+                    smooth: true,
+                    data: [],
+                    itemStyle: {
+                        normal: {
+                            color: '#90EE90',
+                            opacity: 1,
+                            barBorderRadius: 5,
+                        }
+                    }
+                },
+                ]
+            };
+            for (let i = 0; i < result.data.length; i++) {
+                option.xAxis[0].data.push(result.data[i].education)
+                option.series[0].data.push(result.data[i].salary)
+            }
+            myChart.setOption(option);
+            window.addEventListener("resize", function () {
+                myChart.resize();
+            });
+        });
+
+    }
+
+</script>
+</body>
+</html>

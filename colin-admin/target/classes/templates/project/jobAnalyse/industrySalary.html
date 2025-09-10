@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('招聘数据分析')"/>
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>全国岗位最多的前十个城市</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="echarts" id="analyseOne"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: echarts-js"/>
+<script type="text/javascript">
+    var prefix = ctx + "project/jobAnalyse";
+    $(function () {
+        getData()
+    });
+
+    function getData() {
+        $.get(prefix + '/analyseOne', function (result) {
+            var myChart = echarts.init(document.getElementById('analyseOne'));
+            option = {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{a} <br/>{b} : {c}'
+                },
+                legend: {
+                    data: [],
+                    textStyle: {
+                        fontSize: '12',
+                    },
+                },
+                series: [
+                    {
+                        name: '平均薪资',
+                        type: 'funnel',
+                        left: '10%',
+                        top: 80,
+                        bottom: 20,
+                        width: '80%',
+                        min: 0,
+                        max: 60000,
+                        minSize: '0%',
+                        maxSize: '100%',
+                        sort: 'descending',
+                        gap: 2,
+                        label: {
+                            show: true,
+                            position: 'inside'
+                        },
+                        labelLine: {
+                            length: 10,
+                            lineStyle: {
+                                width: 1,
+                                type: 'solid'
+                            }
+                        },
+                        itemStyle: {
+                            borderWidth: 1,
+                            // 添加颜色配置
+                            color: function (params) {
+                                var colorList = [
+                                    '#1177AA', '#33AACC', '#55BBDD',
+                                    '#77AADD', '#99CCFF', '#AADDFF',
+                                    '#BBEEFF', '#CCDDFF', '#AAEEBB',
+                                    '#88CC99', '#66AA77', '#44AA55',
+                                    '#228833', '#006611', '#004488',
+                                    '#002255', '#000022', '#111133'
+                                ];
+                                return colorList[params.dataIndex];
+                            }
+                        },
+                        emphasis: {
+                            label: {
+                                fontSize: 20
+                            }
+                        },
+                        data: []
+                    }
+                ]
+            };
+
+            for (let i = 0; i < result.data.length; i++) {
+                var mapData = {
+                    name: '',
+                    value: 0
+                }
+                option.legend.data.push(result.data[i].industry)
+                mapData.name = result.data[i].industry
+                mapData.value = result.data[i].salary
+                option.series[0].data.push(mapData)
+            }
+
+            myChart.setOption(option);
+            window.addEventListener("resize", function () {
+                myChart.resize();
+            });
+        });
+
+    }
+
+</script>
+</body>
+</html>
