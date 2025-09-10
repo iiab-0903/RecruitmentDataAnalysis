@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('每类公司岗位的招聘情况')"/>
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>每类公司岗位的招聘情况</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="echarts" id="analyseOne"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: echarts-js"/>
+<script type="text/javascript">
+    var prefix = ctx + "project/jobAnalyse";
+    $(function () {
+        getData()
+    });
+
+    function getData() {
+        $.get(prefix + '/analyseFive', function (result) {
+            // 基于准备好的dom，初始化echarts实例
+            var myChart = echarts.init(document.getElementById('analyseOne'));
+
+            option = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {type: 'shadow'},
+                }, "grid": {
+                    "top": "15%",
+                    "right": "10%",
+                    "bottom": "20",
+                    "left": "10%",
+                },
+                legend: {
+                    data: ['招聘数量'],
+                    right: 'center',
+                    top: 0,
+                    itemWidth: 12,
+                    itemHeight: 10,
+                },
+                xAxis: [
+                    {
+                        "type": "category",
+
+                        data: [],
+                        axisLabel: {
+                            // interval: 0,
+                            // rotate: 50,
+                            show: true,
+                            // splitNumber: 15,
+                            // formatter: function (value) {
+                            //     if (value.length > 6) {
+                            //         return value.substring(0, 3) + '...';  // 长文本超出部分隐藏
+                            //     } else {
+                            //         return value;
+                            //     }
+                            // }
+                        },
+
+                    },
+                ],
+                yAxis: [
+                    {
+                        "type": "value",
+                        splitLine: {show: false},
+                        axisTick: {show: false},
+
+                    },
+
+                ],
+                series: [
+
+                    {
+                        "name": "招聘数量",
+                        "type": "bar",
+                        data: [],
+                        "barWidth": "20%",
+
+                        "itemStyle": {
+                            "normal": {
+                                barBorderRadius: 15,
+                                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                    offset: 0,
+                                    color: '#fccb05'
+                                }, {
+                                    offset: 1,
+                                    color: '#f5804d'
+                                }]),
+                            }
+                        },
+                        "barGap": "0"
+                    },
+                ]
+            };
+
+            for (let i = 0; i < result.data.length; i++) {
+                option.xAxis[0].data.push(result.data[i].company_type)
+                option.series[0].data.push(result.data[i].job_num)
+            }
+            // 使用刚指定的配置项和数据显示图表。
+            myChart.setOption(option);
+            window.addEventListener("resize", function () {
+                myChart.resize();
+            });
+        });
+
+    }
+
+</script>
+</body>
+</html>

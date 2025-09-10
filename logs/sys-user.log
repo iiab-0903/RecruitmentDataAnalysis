@@ -1,0 +1,8 @@
+15:16:18.127 [schedule-pool-2] INFO  sys-user - [run,109] - [127.0.0.1]内网IP[admin][Success][登录成功]
+15:18:22.532 [Thread-7] INFO  sys-user - [shutdownSpringSessionValidationScheduler,45] - ====关闭会话验证任务====
+15:18:22.545 [Thread-7] INFO  sys-user - [shutdownAsyncManager,62] - ====关闭后台任务任务线程池====
+15:18:22.545 [Thread-7] INFO  sys-user - [shutdownEhCacheManager,75] - ====关闭缓存====
+15:20:49.177 [schedule-pool-1] INFO  sys-user - [run,109] - [127.0.0.1]内网IP[admin][Success][登录成功]
+15:36:41.921 [SpringApplicationShutdownHook] INFO  sys-user - [shutdownSpringSessionValidationScheduler,45] - ====关闭会话验证任务====
+15:36:41.945 [SpringApplicationShutdownHook] INFO  sys-user - [shutdownAsyncManager,62] - ====关闭后台任务任务线程池====
+15:36:41.946 [SpringApplicationShutdownHook] INFO  sys-user - [shutdownEhCacheManager,75] - ====关闭缓存====

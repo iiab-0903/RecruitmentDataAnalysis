@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('气气象数据分析')"/>
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>不同规模岗位招聘情况</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="echarts" id="analyseOne"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: echarts-js"/>
+<script type="text/javascript">
+    var prefix = ctx + "project/jobAnalyse";
+    $(function () {
+        getData()
+    });
+
+    function getData() {
+        $.get(prefix + "/analyseFour", function (result) {
+            // 基于准备好的dom，初始化echarts实例
+            var myChart = echarts.init(document.getElementById('analyseOne'));
+
+            option = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {type: 'shadow'},
+                    // formatter:'{c}' ,
+                },
+                // grid: {
+                //     left: '0',
+                //     top: '30',
+                //     right: '10',
+                //     bottom: '-20',
+                //     containLabel: true
+                // },
+                legend: {
+                    data: ['招聘数量'],
+                    right: 'center',
+                    // itemGap: 35
+                },
+
+                xAxis: [{
+                    type: 'category',
+                    boundaryGap: false,
+
+                    data: []
+
+                },],
+
+                yAxis: [{
+                    type: 'value',
+                    axisTick: {show: false},
+                    // splitNumber: 6,
+
+                    axisLabel: {
+                        formatter: "{value}",
+                        textStyle: {
+                            fontSize: 14,
+                        },
+                    },
+                }],
+                series: [
+                    {
+                        name: '招聘数量',
+                        type: 'line',
+                        smooth: true,
+                        symbol: 'circle',
+                        symbolSize: 5,
+                        showSymbol: false,
+                        lineStyle: {
+                            normal: {
+                                color: 'rgba(228, 228, 126, 1)',
+                                width: 2
+                            }
+                        },
+                        areaStyle: {
+                            normal: {
+                                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                    offset: 0,
+                                    color: 'rgba(228, 228, 126, .2)'
+                                }, {
+                                    offset: 1,
+                                    color: 'rgba(228, 228, 126, 0)'
+                                }], false),
+                                shadowColor: 'rgba(0, 0, 0, 0.1)',
+                            }
+                        },
+                        itemStyle: {
+                            normal: {
+                                color: 'rgba(228, 228, 126, 1)',
+                                borderColor: 'rgba(228, 228, 126, .1)',
+                                borderWidth: 12
+                            }
+                        },
+                        data: []
+
+                    },
+                ]
+            };
+
+            for (let i = 0; i < result.data.length; i++) {
+                option.xAxis[0].data.push(result.data[i].company_scale)
+                option.series[0].data.push(result.data[i].job_num)
+            }
+            // 使用刚指定的配置项和数据显示图表。
+            myChart.setOption(option);
+            window.addEventListener("resize", function () {
+                myChart.resize();
+            });
+        });
+
+    }
+
+</script>
+</body>
+</html>

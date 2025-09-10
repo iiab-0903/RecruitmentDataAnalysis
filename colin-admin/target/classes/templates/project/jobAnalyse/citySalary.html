@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('城市薪资对比')"/>
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>城市薪资对比</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="echarts" id="analyseOne"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: echarts-js"/>
+<script type="text/javascript">
+    var prefix = ctx + "project/jobAnalyse";
+    $(function () {
+        getData()
+    });
+
+    function getData() {
+        $.get(prefix + '/analyseThree', function (result) {
+            var myChart = echarts.init(document.getElementById('analyseOne'));
+            option = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {type: 'shadow'},
+                },
+                legend: {
+                    data: ['平均薪资'],
+                    right: 'center', width: '100%',
+                    itemWidth: 12,
+                    itemHeight: 10,
+                },
+
+
+                xAxis: [
+                    {
+                        "type": "category",
+                        data: [],
+
+                    },
+                ],
+                "yAxis": [
+                    {
+                        "type": "value",
+                        "name": "元",
+                        axisTick: {show: false},
+                        splitLine: {
+                            show: false,
+
+                        },
+                        "axisLabel": {
+                            "show": true,
+                            fontSize: 14,
+
+                        },
+                        axisLine: {
+                            min: 0,
+                            max: 10,
+                            lineStyle: {color: '#8bd46e'}
+                        },//左线色
+
+                    },
+                    {
+                        "type": "value",
+                        "name": "个",
+                        "show": true,
+                        "axisLabel": {
+                            "show": true,
+                            fontSize: 14,
+                            // formatter: "{value} %",
+                        },
+                        axisTick: {show: false},
+                        axisLine: {lineStyle: {color: '#fbc30d'}},//右线色
+                        splitLine: {show: true, lineStyle: {color: 'rgba(255,255,255,.1)'}},//x轴线
+                    },
+                ],
+                series: [
+
+                    {
+                        "name": "平均薪资",
+                        "type": "bar",
+                        "data": [],
+                        "barWidth": "15%",
+                        "itemStyle": {
+                            "normal": {
+                                barBorderRadius: 15,
+                                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                    offset: 0,
+                                    color: '#8bd46e'
+                                }, {
+                                    offset: 1,
+                                    color: '#09bcb7'
+                                }]),
+                            }
+                        },
+                        "barGap": "0.2"
+                    },
+                ]
+            };
+
+            for (let i = 0; i < result.data.length; i++) {
+                option.xAxis[0].data.push(result.data[i].city)
+                option.series[0].data.push(result.data[i].salary)
+            }
+            myChart.setOption(option);
+            window.addEventListener("resize", function () {
+                myChart.resize();
+            });
+        });
+
+    }
+
+</script>
+</body>
+</html>
